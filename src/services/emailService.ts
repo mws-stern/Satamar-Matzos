@@ -4,7 +4,7 @@ import { supabaseService } from "@/services/supabaseService";
 
 const BUSINESS_ADDRESS = "2765 Chemin Bates, Montreal, QC";
 const BUSINESS_EMAIL = "sales@satmarmatzosmtl.ca";
-const BUSINESS_PHONE = "(514) 555-1234";
+const BUSINESS_PHONE = "438-300-8425";
 
 const LETTERHEAD_HTML = `<img src="https://satamar-matzos-eta.vercel.app/letterhead.png" alt="Satmar Montreal Matzos" style="width:100%;max-width:600px;display:block;margin:0 auto;" />`;
 
