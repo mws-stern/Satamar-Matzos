@@ -6,7 +6,7 @@ const BUSINESS_ADDRESS = "2765 Chemin Bates, Montreal, QC";
 const BUSINESS_EMAIL = "sales@satmarmatzosmtl.ca";
 const BUSINESS_PHONE = "(514) 555-1234";
 
-const LETTERHEAD_HTML = `<img src="${process.env.NEXT_PUBLIC_SITE_URL}/letterhead.png" alt="Satmar Montreal Matzos" style="width:100%;max-width:600px;display:block;margin:0 auto;" />`;
+const LETTERHEAD_HTML = `<img src="https://satamar-matzos-eta.vercel.app/letterhead.png" alt="Satmar Montreal Matzos" style="width:100%;max-width:600px;display:block;margin:0 auto;" />`;
 
 interface EmailResult {
     success: boolean;
@@ -58,7 +58,7 @@ export const emailService = {
                   <!-- Header Letterhead -->
                   <tr>
                     <td style="padding: 0; background: #5a3a1a;">
-                      <img src="${process.env.NEXT_PUBLIC_SITE_URL}/letterhead.png" alt="Satmar Montreal Matzos" style="width:100%;max-width:600px;display:block;height:auto;" />
+                      <img src="https://satamar-matzos-eta.vercel.app/letterhead.png" alt="Satmar Montreal Matzos" style="width:100%;max-width:600px;display:block;height:auto;" />
                     </td>
                   </tr>
                   <tr>
@@ -458,7 +458,7 @@ export const emailService = {
                   <!-- Letterhead -->
                   <tr>
                     <td style="padding: 0; background: #5a3a1a;">
-                      <img src="${process.env.NEXT_PUBLIC_SITE_URL}/letterhead.png" alt="Satmar Montreal Matzos" style="width:100%;max-width:600px;display:block;height:auto;" />
+                      <img src="https://satamar-matzos-eta.vercel.app/letterhead.png" alt="Satmar Montreal Matzos" style="width:100%;max-width:600px;display:block;height:auto;" />
                     </td>
                   </tr>
                   <tr>
@@ -600,7 +600,7 @@ export const emailService = {
                   <!-- Header with Logo -->
                   <tr>
                     <td style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 40px; text-align: center;">
-                      <img src="${process.env.NEXT_PUBLIC_SITE_URL}/letterhead.png" alt="Satmar Montreal Matzos" style="width:100%;max-width:600px;display:block;height:auto;" />
+                      <img src="https://satamar-matzos-eta.vercel.app/letterhead.png" alt="Satmar Montreal Matzos" style="width:100%;max-width:600px;display:block;height:auto;" />
                       <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">Order Confirmation</h1>
                     </td>
                   </tr>
@@ -740,7 +740,7 @@ export const emailService = {
                   <!-- Header Letterhead -->
                   <tr>
                     <td style="padding: 0; background: #5a3a1a;">
-                      <img src="${process.env.NEXT_PUBLIC_SITE_URL}/letterhead.png" alt="Satmar Montreal Matzos" style="width:100%;max-width:600px;display:block;height:auto;" />
+                      <img src="https://satamar-matzos-eta.vercel.app/letterhead.png" alt="Satmar Montreal Matzos" style="width:100%;max-width:600px;display:block;height:auto;" />
                     </td>
                   </tr>
                   <tr>
