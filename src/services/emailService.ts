@@ -258,18 +258,7 @@ export const emailService = {
                   
                   <!-- Header Letterhead -->
                   <tr>
-                    <td style="background: linear-gradient(135deg, #92400e 0%, #d97706 60%, #f59e0b 100%); padding: 50px 40px 40px; text-align: center;">
-                      <div style="margin-bottom: 16px;">
-                        <div style="display: inline-block; background: rgba(255,255,255,0.15); border-radius: 50%; padding: 16px; margin-bottom: 12px;">
-                          <div style="font-size: 48px; line-height: 1;">🌾</div>
-                        </div>
-                      </div>
-                      <h1 style="color: #ffffff; margin: 0 0 6px 0; font-size: 36px; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">Satmar Montreal Matzos</h1>
-                      <p style="color: #fef3c7; margin: 0 0 6px 0; font-size: 22px; font-weight: 600; letter-spacing: 1px;" dir="rtl">מצות סאטמאר מאנטרעאל</p>
-                      <div style="width: 60px; height: 3px; background: rgba(255,255,255,0.5); margin: 16px auto;"></div>
-                      <h2 style="color: #fff7ed; margin: 0 0 6px 0; font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">Invoice</h2>
-                      <p style="color: #fef3c7; margin: 8px 0 0 0; font-size: 15px;">Payment Details</p>
-                    </td>
+                    <td style="padding: 0; background: #5a3a1a;"><img src="https://satamar-matzos-eta.vercel.app/letterhead.png" alt="Satmar Montreal Matzos" style="width:100%;max-width:600px;display:block;height:auto;" /></td>
                   </tr>
 
                   <!-- From Section -->
