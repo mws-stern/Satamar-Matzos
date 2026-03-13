@@ -83,7 +83,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [router, initialize]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const signOut = async () => {
     await supabase.auth.signOut();

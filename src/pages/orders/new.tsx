@@ -480,9 +480,7 @@ export default function NewOrderPage({
         return null;
     }
 
-    if (isLoading && customers.length === 0) {
-        return <div className="p-8 text-center">Loading database...</div>;
-    }
+    
 
     return (
         <>
