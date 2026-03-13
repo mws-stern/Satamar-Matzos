@@ -600,7 +600,7 @@ export const emailService = {
                   <!-- Header with Logo -->
                   <tr>
                     <td style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 40px; text-align: center;">
-                      <img src="${process.env.NEXT_PUBLIC_SITE_URL}/logo.png" alt="Satmar Montreal Matzos" style="width: 120px; height: auto; margin-bottom: 20px;" />
+                      <img src="${LETTERHEAD_BASE64}" alt="Satmar Montreal Matzos" style="width:100%;max-width:600px;display:block;height:auto;" />
                       <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">Order Confirmation</h1>
                     </td>
                   </tr>
