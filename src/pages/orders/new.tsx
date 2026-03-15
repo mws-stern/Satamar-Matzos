@@ -545,7 +545,7 @@ export default function NewOrderPage({
                                                                                                                                                                                                                                                                                                                                                 {customers.map((customer) => (
                                                                                                                                                                                                                                                                                                                                                                         <CommandItem
                                                                                                                                                                                                                                                                                                                                                                                                 key={customer.id}
-                                                                                                                                                                                                                                                                                                                                                                                                value={`${customer.name} ${customer.nameHebrew || ''} ${customer.phone || ''} ${customer.mobile || ''} ${customer.email || ''}`}
+                                                                                                                                                                                                                                                                                                                                                                                                value={`${customer.name} ${customer.nameHebrew || ''} ${customer.phone || ''} ${(customer.phone||'').replace(/-/g,'')} ${customer.mobile || ''} ${(customer.mobile||'').replace(/-/g,'')} ${customer.email || ''}`}
                                                                                                                                                                                                                                                                                                                                                                                                 onSelect={() => {
                                                                                                                                                                                                                                                                                                                                                                                                                         setSelectedCustomerId(customer.id);
                                                                                                                                                                                                                                                                                                                                                                                                                         setOpenCombobox(false);
@@ -850,6 +850,22 @@ export default function NewOrderPage({
                                                                                                                         </div>
                                                                                                 </div>
                                                                         </div>
-                                                </>
+                                
+                <Dialog open={isCustomerDialogOpen} onOpenChange={setIsCustomerDialogOpen}>
+                        <DialogContent className="sm:max-w-md">
+                                <DialogHeader><DialogTitle>Add New Customer</DialogTitle></DialogHeader>
+                                <div className="space-y-4 py-2">
+                                        <div><Label>Name *</Label><Input placeholder="Full name" value={newCustomer.name} onChange={(e) => setNewCustomer({...newCustomer, name: e.target.value})} /></div>
+                                        <div><Label>Phone *</Label><Input placeholder="Phone number" value={newCustomer.phone} onChange={(e) => setNewCustomer({...newCustomer, phone: e.target.value})} /></div>
+                                        <div><Label>Email</Label><Input placeholder="Email" value={newCustomer.email} onChange={(e) => setNewCustomer({...newCustomer, email: e.target.value})} /></div>
+                                        <div><Label>Address</Label><Input placeholder="Address" value={newCustomer.address} onChange={(e) => setNewCustomer({...newCustomer, address: e.target.value})} /></div>
+                                </div>
+                                <DialogFooter>
+                                        <Button variant="outline" onClick={() => setIsCustomerDialogOpen(false)}>Cancel</Button>
+                                        <Button onClick={handleCreateCustomer} disabled={isLoading}>{isLoading ? "Creating..." : "Create Customer"}</Button>
+                                </DialogFooter>
+                        </DialogContent>
+                </Dialog>
+                </>
                         );
 }
