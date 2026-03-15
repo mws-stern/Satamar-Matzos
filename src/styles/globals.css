@@ -50,7 +50,7 @@
   .dark {
     --radius: 0.55rem;
     --background: 330 0% 0.3%;
-    --foreground: 0 0% 97.5%;
+    --foreground: 0 0% 97.5%; /* bright white text */
     --card: 0 0% 4.5%;
     --card-foreground: 0 0% 97.5%;
     --popover: 0 0% 8.6%;
@@ -60,7 +60,7 @@
     --secondary: 0 0% 8.6%;
     --secondary-foreground: 0 0% 97.5%;
     --muted: 0 0% 8.6%;
-    --muted-foreground: 0 0% 70.8%;
+    --muted-foreground: 0 0% 85%;
     --accent: 0 0% 21.2%;
     --accent-foreground: 0 0% 97.5%;
     --destructive: 359.9132 100.2494% 67.8807%;
@@ -84,6 +84,16 @@
   }
 }
 
+
+  .dark .text-gray-900, .dark .text-gray-800, .dark .text-gray-700 {
+    color: hsl(0 0% 95%) !important;
+  }
+  .dark .text-gray-600, .dark .text-gray-500 {
+    color: hsl(0 0% 80%) !important;
+  }
+  .dark .text-amber-900, .dark .text-amber-800 {
+    color: hsl(38 100% 80%) !important;
+  }
 @layer base {
   * {
     @apply border-border;
