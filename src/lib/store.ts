@@ -696,7 +696,7 @@ const useStore = create<AppState>()(
       },
     }),
     {
-      name: "bakery-store",
+      name: "bakery-store-v3",
       partialize: (state) => ({
         products: state.products,
         customers: state.customers,
