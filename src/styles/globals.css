@@ -186,3 +186,23 @@
 .dark .text-muted-foreground { color: rgb(190 190 190) !important; }
 .dark .text-amber-900, .dark .text-amber-800, .dark .text-amber-700 { color: rgb(255 200 100) !important; }
 .dark p, .dark span, .dark h1, .dark h2, .dark h3, .dark label { color: inherit; }
+
+/* Dark mode input/search bar fixes */
+.dark input, .dark textarea, .dark select {
+  background-color: hsl(0 0% 15%) !important;
+  color: hsl(0 0% 95%) !important;
+  border-color: hsl(0 0% 30%) !important;
+}
+.dark input::placeholder, .dark textarea::placeholder {
+  color: hsl(0 0% 60%) !important;
+}
+.dark [cmdk-input] {
+  background-color: hsl(0 0% 15%) !important;
+  color: hsl(0 0% 95%) !important;
+}
+.dark .bg-gray-50, .dark .bg-gray-50\/50 {
+  background-color: hsl(0 0% 12%) !important;
+}
+.dark .bg-white {
+  background-color: hsl(0 0% 10%) !important;
+}
