@@ -58,7 +58,7 @@ export default function NewOrderPage({
                         const [products, setProducts] = useState < Product[] > (initialProducts || []);
                         const [customers, setCustomers] = useState < Customer[] > (initialCustomers || []);
                         // Use store customers as fallback
-                        const effectiveCustomers = customers.length > 0 ? customers : storeCustomers;
+                        const effectiveCustomers = storeCustomers.length > 0 ? storeCustomers : customers;
                         const [allOrders, setAllOrders] = useState < Order[] > (initialOrders || []);
                         const [selectedCustomerId, setSelectedCustomerId] = useState("");
                         const [openCombobox, setOpenCombobox] = useState(false);
