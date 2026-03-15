@@ -62,7 +62,7 @@ export default function Dashboard() {
     const allCustomers = customers.length > 0 ? customers : [];
     const filtered = allCustomers.filter(c =>
       (c.name || "").toLowerCase().includes(q) ||
-      (c.phone || "").includes(q) ||
+      (c.phone || "").includes(q) || (c.phone || "").replace(/-/g, "").includes(q.replace(/-/g, "")) ||
       (c.mobile || "").includes(q) ||
       (c.email || "").toLowerCase().includes(q) ||
       ((c as any).nameHebrew || "").includes(q)
