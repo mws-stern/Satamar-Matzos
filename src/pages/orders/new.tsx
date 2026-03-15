@@ -82,6 +82,15 @@ export default function NewOrderPage({
                                                 setMounted(true);
                                                 // Load data client-side
                                                 const loadData = async () => {
+                                                                        // Wait for valid session
+                                                                        const { data: { session } } = await supabase.auth.getSession();
+                                                                        if (!session) {
+                                                                            await new Promise(resolve => {
+                                                                                const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
+                                                                                    if (s) { subscription.unsubscribe(); resolve(null); }
+                                                                                });
+                                                                            });
+                                                                        }
                                                                         const { data: customersData } = await supabase.from("customers").select("*").order("name", { ascending: true });
                                                                         const { data: productsData } = await supabase.from("products").select("*");
                                                                         const { data: ordersData } = await supabase.from("orders").select("*");
