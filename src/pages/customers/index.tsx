@@ -16,6 +16,7 @@ export default function CustomersPage() {
 
     const loadCustomers = async () => {
         setLoading(true);
+        // prevent stale closure issues
         try {
             const { data, error } = await supabase
                 .from("customers")
@@ -51,7 +52,7 @@ export default function CustomersPage() {
         }
     };
 
-    useEffect(() => { loadCustomers(); }, []);
+    useEffect(() => { loadCustomers(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleDelete = async (e: React.MouseEvent, customerId: string) => {
         e.preventDefault();
@@ -69,12 +70,13 @@ export default function CustomersPage() {
 
     const filteredCustomers = customers.filter((customer) => {
         const query = searchQuery.toLowerCase();
+        const queryNoDash = query.replace(/-/g, "");
         return (
             (customer.name || "").toLowerCase().includes(query) ||
             (customer.nameHebrew && customer.nameHebrew.includes(query)) ||
             (customer.email && customer.email.toLowerCase().includes(query)) ||
-            (customer.phone && customer.phone.includes(query)) ||
-            (customer.mobile && customer.mobile.includes(query))
+            (customer.phone && (customer.phone.includes(query) || customer.phone.replace(/-/g, "").includes(queryNoDash))) ||
+            (customer.mobile && (customer.mobile.includes(query) || customer.mobile.replace(/-/g, "").includes(queryNoDash)))
         );
     });
 
