@@ -143,6 +143,13 @@ export default function NewOrderPage({
                                                 loadData();
                         }, []);
 
+                        // Sync store customers to local state when store hydrates
+                        useEffect(() => {
+                                                if (storeCustomers.length > 0 && customers.length === 0) {
+                                                                        setCustomers(storeCustomers);
+                                                }
+                        }, [storeCustomers]);
+
                         useEffect(() => {
                                                 if (selectedCustomerId) {
                                                                         const custOrders = allOrders.filter((o) => o.customerId === selectedCustomerId);
