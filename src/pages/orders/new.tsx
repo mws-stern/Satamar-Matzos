@@ -81,6 +81,7 @@ export default function NewOrderPage({
                                                 setMounted(true);
                                                 // Load data client-side
                                                 const loadData = async () => {
+                                                                        await supabase.auth.getSession();
                                                                         const { data: customersData, error: custErr } = await supabase.from("customers").select("*").order("name", { ascending: true });
                                                                         if (custErr) { console.error("customers load error:", custErr); }
                                                                         const { data: productsData } = await supabase.from("products").select("*");

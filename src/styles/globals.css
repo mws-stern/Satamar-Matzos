@@ -178,3 +178,11 @@
     display: block !important;
   }
 }
+
+/* Dark mode text visibility fixes */
+.dark .text-gray-900, .dark .text-gray-800 { color: rgb(245 245 245) !important; }
+.dark .text-gray-700, .dark .text-gray-600 { color: rgb(210 210 210) !important; }
+.dark .text-gray-500, .dark .text-gray-400 { color: rgb(180 180 180) !important; }
+.dark .text-muted-foreground { color: rgb(190 190 190) !important; }
+.dark .text-amber-900, .dark .text-amber-800, .dark .text-amber-700 { color: rgb(255 200 100) !important; }
+.dark p, .dark span, .dark h1, .dark h2, .dark h3, .dark label { color: inherit; }
