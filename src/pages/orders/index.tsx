@@ -102,13 +102,14 @@ export default function OrdersPage({ initialOrders, initialCustomers }: OrdersPa
         };
     }, []);
 
-    const getCustomerName = (customerId: string) => {
-        const customer = customers.find((c) => c.id === customerId);
+    const getCustomerName = (order: any) => {
+        if (order.customerName) return order.customerName;
+        const customer = customers.find((c) => c.id === order.customerId);
         return customer?.name || "Unknown";
     };
 
     const filteredOrders = orders.filter((order) => {
-        const customerName = getCustomerName(order.customerId);
+        const customerName = getCustomerName(order);
         return (
             customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             order.id.toLowerCase().includes(searchTerm.toLowerCase())
@@ -182,7 +183,7 @@ export default function OrdersPage({ initialOrders, initialCustomers }: OrdersPa
                                     <CardContent className="p-6">
                                         <div className="flex justify-between items-start">
                                             <div className="space-y-1">
-                                                <p className="font-semibold text-lg">{getCustomerName(order.customerId)}</p>
+                                                <p className="font-semibold text-lg">{getCustomerName(order)}</p>
                                                 <p className="text-sm text-muted-foreground">Order #{order.orderNumber || order.id.slice(0, 8)}</p>
                                                 <p className="text-sm text-muted-foreground">
                                                     {new Date(order.createdAt).toLocaleDateString()}

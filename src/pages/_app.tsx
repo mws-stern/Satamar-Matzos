@@ -20,9 +20,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <TooltipProvider>
           <main className={inter.className}>
             {!isLoginPage ? (
-              <div className="flex min-h-screen">
+              <div className="flex min-h-screen w-full">
                 <Sidebar />
-                <div className="flex-1 overflow-auto">
+                <div className="flex-1 overflow-auto min-w-0 w-full">
                   <Component {...pageProps} />
                 </div>
               </div>
