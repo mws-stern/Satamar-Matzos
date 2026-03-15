@@ -60,7 +60,7 @@
     --secondary: 0 0% 8.6%;
     --secondary-foreground: 0 0% 97.5%;
     --muted: 0 0% 8.6%;
-    --muted-foreground: 0 0% 85%;
+    --muted-foreground: 0 0% 90%;
     --accent: 0 0% 21.2%;
     --accent-foreground: 0 0% 97.5%;
     --destructive: 359.9132 100.2494% 67.8807%;
@@ -101,6 +101,22 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer utilities {
+  .dark * {
+    --tw-text-opacity: 1;
+  }
+  .dark .text-gray-900 { color: rgb(245 245 245) !important; }
+  .dark .text-gray-800 { color: rgb(235 235 235) !important; }
+  .dark .text-gray-700 { color: rgb(220 220 220) !important; }
+  .dark .text-gray-600 { color: rgb(200 200 200) !important; }
+  .dark .text-gray-500 { color: rgb(180 180 180) !important; }
+  .dark .text-gray-400 { color: rgb(160 160 160) !important; }
+  .dark .text-amber-900 { color: rgb(255 210 140) !important; }
+  .dark .text-amber-800 { color: rgb(255 200 120) !important; }
+  .dark .text-amber-700 { color: rgb(255 190 100) !important; }
+  .dark .text-muted-foreground { color: rgb(190 190 190) !important; }
 }
 
 @layer components {
