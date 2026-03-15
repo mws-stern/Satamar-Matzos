@@ -40,8 +40,7 @@ const useStore = create<AppState>()(
       initialize: async () => {
         const state = get();
         if (state.isInitializing) return;
-        // Skip only if initialized AND actually has data AND data is fresh
-        if (state.isInitialized && state.customers.length > 0 && state.products.length > 0 && state.lastSync && (Date.now() - state.lastSync) < 5 * 60 * 1000) return;
+
 
         set({ isInitializing: true, isLoading: true });
 
@@ -703,7 +702,6 @@ const useStore = create<AppState>()(
         customers: state.customers,
         orders: state.orders,
         lastSync: state.lastSync,
-        isInitialized: state.isInitialized,
       }),
     }
   )
