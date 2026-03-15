@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabaseService } from "@/services/supabaseService";
 import { supabase } from "@/integrations/supabase/client";
 import { emailService } from "@/services/emailService";
+import useStore from "@/lib/store";
 import type { Product, Customer, OrderItem, Order } from "@/types";
 
 export async function getServerSideProps() {
@@ -52,9 +53,12 @@ export default function NewOrderPage({
 }) {
                         const router = useRouter();
                         const { toast } = useToast();
+                        const { customers: storeCustomers, products: storeProducts, initialize } = useStore();
                         const [mounted, setMounted] = useState(false);
                         const [products, setProducts] = useState < Product[] > (initialProducts || []);
                         const [customers, setCustomers] = useState < Customer[] > (initialCustomers || []);
+                        // Use store customers as fallback
+                        const effectiveCustomers = customers.length > 0 ? customers : storeCustomers;
                         const [allOrders, setAllOrders] = useState < Order[] > (initialOrders || []);
                         const [selectedCustomerId, setSelectedCustomerId] = useState("");
                         const [openCombobox, setOpenCombobox] = useState(false);
@@ -80,6 +84,7 @@ export default function NewOrderPage({
 
                         useEffect(() => {
                                                 setMounted(true);
+                                                initialize();
                                                 // Load data client-side
                                                 const loadData = async () => {
                                                                         // Wait for valid session
@@ -143,7 +148,7 @@ export default function NewOrderPage({
                                                                         const custOrders = allOrders.filter((o) => o.customerId === selectedCustomerId);
                                                                         setCustomerOrders(custOrders);
 
-                                                                        const customer = customers.find((c) => c.id === selectedCustomerId) || null;
+                                                                        const customer = effectiveCustomers.find((c) => c.id === selectedCustomerId) || null;
                                                                         setSelectedCustomer(customer);
 
                                                                         if (customer && (!customer.email || !customer.email.includes("@"))) {
@@ -351,7 +356,7 @@ export default function NewOrderPage({
                                                                         return;
                                                 }
 
-                                                const customer = customers.find(c => c.id === selectedCustomerId);
+                                                const customer = effectiveCustomers.find(c => c.id === selectedCustomerId);
                                                 if (!customer) return;
 
                                                 if (requireEmail) {
@@ -553,7 +558,7 @@ export default function NewOrderPage({
                                                                                                                                                                                                                                                                                                 <CommandList>
                                                                                                                                                                                                                                                                                                                         <CommandEmpty>No customer found.</CommandEmpty>
                                                                                                                                                                                                                                                                                                                         <CommandGroup heading="Existing Customers">
-                                                                                                                                                                                                                                                                                                                                                {customers.map((customer) => (
+                                                                                                                                                                                                                                                                                                                                                {effectiveCustomers.map((customer) => (
                                                                                                                                                                                                                                                                                                                                                                         <CommandItem
                                                                                                                                                                                                                                                                                                                                                                                                 key={customer.id}
                                                                                                                                                                                                                                                                                                                                                                                                 value={`${customer.name} ${customer.nameHebrew || ''} ${customer.phone || ''} ${(customer.phone||'').replace(/-/g,'')} ${customer.mobile || ''} ${(customer.mobile||'').replace(/-/g,'')} ${customer.email || ''}`}
@@ -587,7 +592,7 @@ export default function NewOrderPage({
                                                                                                                                                                                                                                                 </PopoverContent>
                                                                                                                                                                                                                         </Popover>
                                                                                                                                                                                                 </div>
-                                                                                                                                                                                                {customers.length === 0 && (
+                                                                                                                                                                                                {effectiveCustomers.length === 0 && (
                                                                                                                                                                                                                         <div className="text-center py-4">
                                                                                                                                                                                                                                                 <p className="text-gray-600 mb-3">No customers found</p>
                                                                                                                                                                                                                                                 <Link href="/customers/new">
