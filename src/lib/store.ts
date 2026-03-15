@@ -40,8 +40,8 @@ const useStore = create<AppState>()(
       initialize: async () => {
         const state = get();
         if (state.isInitializing) return;
-        // Skip if already initialized and data is fresh (less than 5 minutes old)
-        if (state.isInitialized && state.lastSync && (Date.now() - state.lastSync) < 5 * 60 * 1000) return;
+        // Skip only if initialized AND has customers AND data is fresh
+        if (state.isInitialized && state.customers.length > 0 && state.lastSync && (Date.now() - state.lastSync) < 5 * 60 * 1000) return;
 
         set({ isInitializing: true, isLoading: true });
 
