@@ -65,6 +65,7 @@ export default function NewOrderPage({
                         const [orderDiscountType, setOrderDiscountType] = useState < "percent" | "fixed" > ("percent");
                         const [customerOrders, setCustomerOrders] = useState < Order[] > ([]);
                         const [isLoading, setIsLoading] = useState(false);
+                        const [customersLoading, setCustomersLoading] = useState(true);
                         const [selectedCustomer, setSelectedCustomer] = useState < Customer | null > (null);
                         const [requireEmail, setRequireEmail] = useState(false);
                         const [tempEmail, setTempEmail] = useState("");
@@ -91,6 +92,7 @@ export default function NewOrderPage({
                                                                         if (custErr) { console.error("customers load error:", custErr); }
                                                                         const { data: productsData } = await supabase.from("products").select("*");
                                                                         const { data: ordersData } = await supabase.from("orders").select("*");
+                                                                        setCustomersLoading(false);
                                                                         if (customersData) setCustomers((customersData as any[]).map((c: any) => ({
                                                                                                 ...c,
                                                                                                 name: c.name || `${c.first_name || ""} ${c.last_name || ""}`.trim(),
