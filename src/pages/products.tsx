@@ -22,6 +22,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import type { Product } from "@/types";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function ProductsPage() {
     const { toast } = useToast();
@@ -30,6 +31,26 @@ export default function ProductsPage() {
     const [editingId, setEditingId] = useState < string | null > (null);
     const [showAddForm, setShowAddForm] = useState(false);
     const [editForm, setEditForm] = useState < Partial < Product >> ({});
+    const [salesStats, setSalesStats] = useState<Record<string, {totalLbs: number, totalRevenue: number, orderCount: number}>>({});
+
+    const loadSalesStats = async () => {
+        try {
+            const { data: orders } = await supabase.from("orders").select("items, status");
+            if (!orders) return;
+            const stats: Record<string, {totalLbs: number, totalRevenue: number, orderCount: number}> = {};
+            orders.filter(o => (o as any).status !== "cancelled").forEach((order: any) => {
+                (order.items || []).forEach((item: any) => {
+                    if (!stats[item.productId]) stats[item.productId] = {totalLbs: 0, totalRevenue: 0, orderCount: 0};
+                    const lbs = item.unit === "half_lb" ? item.quantity * 0.5 : item.quantity;
+                    stats[item.productId].totalLbs += lbs;
+                    stats[item.productId].totalRevenue += item.finalPrice || item.totalPrice || 0;
+                    stats[item.productId].orderCount += 1;
+                });
+            });
+            setSalesStats(stats);
+        } catch(e) { console.error("sales stats error", e); }
+    };
+
     const [newProduct, setNewProduct] = useState < Partial < Product >> ({
         name: "",
         nameHebrew: "",
@@ -42,6 +63,7 @@ export default function ProductsPage() {
 
     useEffect(() => {
         loadProducts();
+        loadSalesStats();
     }, []);
 
     const loadProducts = async () => {

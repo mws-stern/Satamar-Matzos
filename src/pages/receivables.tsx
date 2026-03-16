@@ -3,7 +3,13 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { DollarSign, Search, CreditCard, Banknote, Building2, Receipt } from "lucide-react";
+import { DollarSign, Search, CreditCard, Banknote, Building2, Receipt, Pencil, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { supabaseService } from "@/services/supabaseService";
 import type { Payment, Invoice, Order } from "@/types";
@@ -16,6 +22,42 @@ export default function ReceivablesPage() {
     const [orders, setOrders] = useState < Order[] > ([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [filterType, setFilterType] = useState < "all" | "paid" | "unpaid" > ("all");
+    const [editPayment, setEditPayment] = useState<any>(null);
+    const [editAmount, setEditAmount] = useState("");
+    const [editMethod, setEditMethod] = useState("");
+    const [editNotes, setEditNotes] = useState("");
+    const [savingEdit, setSavingEdit] = useState(false);
+    const { toast } = useToast();
+
+    const handleDeletePayment = async (paymentId: string) => {
+        if (!confirm("Delete this payment?")) return;
+        const { error } = await supabase.from("payments").delete().eq("id", paymentId);
+        if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+        setPayments(prev => prev.filter(p => p.id !== paymentId));
+        toast({ title: "Payment deleted" });
+    };
+
+    const handleEditPayment = (payment: any) => {
+        setEditPayment(payment);
+        setEditAmount(String(payment.amount));
+        setEditMethod(payment.paymentMethod);
+        setEditNotes(payment.notes || "");
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editPayment) return;
+        setSavingEdit(true);
+        const { error } = await supabase.from("payments").update({
+            amount: parseFloat(editAmount),
+            payment_method: editMethod,
+            notes: editNotes,
+        }).eq("id", editPayment.id);
+        setSavingEdit(false);
+        if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+        setPayments(prev => prev.map(p => p.id === editPayment.id ? {...p, amount: parseFloat(editAmount), paymentMethod: editMethod, notes: editNotes} : p));
+        setEditPayment(null);
+        toast({ title: "Payment updated" });
+    };
 
     useEffect(() => {
         loadData();
@@ -252,19 +294,17 @@ export default function ReceivablesPage() {
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className="text-right">
-                                            <p className="text-lg font-bold text-green-600">
-                                                ${payment.amount.toFixed(2)}
-                                            </p>
-                                            {payment.confirmed ? (
-                                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                                                    Confirmed
-                                                </Badge>
-                                            ) : (
-                                                <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-                                                    Pending
-                                                </Badge>
-                                            )}
+                                        <div className="text-right flex items-center gap-2">
+                                            <div>
+                                                <p className="text-lg font-bold text-green-600">${payment.amount.toFixed(2)}</p>
+                                                {payment.confirmed ? (
+                                                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Confirmed</Badge>
+                                                ) : (
+                                                    <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Pending</Badge>
+                                                )}
+                                            </div>
+                                            <Button variant="ghost" size="icon" onClick={() => handleEditPayment(payment)}><Pencil className="h-4 w-4 text-blue-600" /></Button>
+                                            <Button variant="ghost" size="icon" onClick={() => handleDeletePayment(payment.id)}><Trash2 className="h-4 w-4 text-red-600" /></Button>
                                         </div>
                                     </div>
                                 ))
@@ -335,6 +375,32 @@ export default function ReceivablesPage() {
                     </CardContent>
                 </Card>
             </div>
+            {/* Edit Payment Dialog */}
+            <Dialog open={!!editPayment} onOpenChange={() => setEditPayment(null)}>
+                <DialogContent>
+                    <DialogHeader><DialogTitle>Edit Payment</DialogTitle></DialogHeader>
+                    <div className="space-y-4 py-2">
+                        <div><Label>Amount</Label><Input type="number" value={editAmount} onChange={e => setEditAmount(e.target.value)} /></div>
+                        <div><Label>Method</Label>
+                            <Select value={editMethod} onValueChange={setEditMethod}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="cash">Cash</SelectItem>
+                                    <SelectItem value="check">Check</SelectItem>
+                                    <SelectItem value="credit_card">Credit Card</SelectItem>
+                                    <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                                    <SelectItem value="e_transfer">E-Transfer</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div><Label>Notes</Label><Input value={editNotes} onChange={e => setEditNotes(e.target.value)} /></div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setEditPayment(null)}>Cancel</Button>
+                        <Button onClick={handleSaveEdit} disabled={savingEdit}>{savingEdit ? "Saving..." : "Save"}</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }
