@@ -54,7 +54,7 @@ export default function ReceivablesPage() {
         }).eq("id", editPayment.id);
         setSavingEdit(false);
         if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
-        setPayments(prev => prev.map(p => p.id === editPayment.id ? {...p, amount: parseFloat(editAmount), paymentMethod: editMethod, notes: editNotes} : p));
+        setPayments(prev => prev.map(p => p.id === editPayment.id ? {...p, amount: parseFloat(editAmount), paymentMethod: editMethod as any, notes: editNotes} : p));
         setEditPayment(null);
         toast({ title: "Payment updated" });
     };
