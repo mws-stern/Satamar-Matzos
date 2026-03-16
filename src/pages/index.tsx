@@ -43,6 +43,33 @@ export default function Dashboard() {
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [paymentNotes, setPaymentNotes] = useState("");
   const [savingPayment, setSavingPayment] = useState(false);
+  const [salesStats, setSalesStats] = useState<{name: string, nameHebrew: string, totalLbs: number, totalRevenue: number, orderCount: number}[]>([]);
+
+  const loadSalesStats = async () => {
+    try {
+      const { data: ordersData } = await supabase.from("orders").select("items, status");
+      const { data: productsData } = await supabase.from("products").select("id, name, name_hebrew");
+      if (!ordersData || !productsData) return;
+      const stats: Record<string, {totalLbs: number, totalRevenue: number, orderCount: number}> = {};
+      ordersData.filter((o: any) => o.status !== "cancelled").forEach((order: any) => {
+        (order.items || []).forEach((item: any) => {
+          if (!stats[item.productId]) stats[item.productId] = {totalLbs: 0, totalRevenue: 0, orderCount: 0};
+          const lbs = item.unit === "half_lb" ? item.quantity * 0.5 : item.quantity;
+          stats[item.productId].totalLbs += lbs;
+          stats[item.productId].totalRevenue += item.finalPrice || item.totalPrice || 0;
+          stats[item.productId].orderCount += 1;
+        });
+      });
+      const result = (productsData as any[]).map((p: any) => ({
+        name: p.name,
+        nameHebrew: p.name_hebrew || "",
+        totalLbs: stats[p.id]?.totalLbs || 0,
+        totalRevenue: stats[p.id]?.totalRevenue || 0,
+        orderCount: stats[p.id]?.orderCount || 0,
+      })).sort((a, b) => b.totalRevenue - a.totalRevenue);
+      setSalesStats(result);
+    } catch(e) { console.error("sales stats error", e); }
+  };
 
   useEffect(() => {
     setMounted(true);
