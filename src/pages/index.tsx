@@ -55,6 +55,10 @@ export default function Dashboard() {
   const topCustomers = mounted && isInitialized ? getTopCustomers(5) : [];
   const recentOrders = mounted && isInitialized ? getRecentOrders(5) : [];
 
+  useEffect(() => {
+    if (mounted) loadSalesStats();
+  }, [mounted]);
+
   // Customer lookup search
   useEffect(() => {
     if (!lookupQuery.trim()) { setLookupResults([]); return; }
