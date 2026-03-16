@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { SEO } from "@/components/SEO";
 import useStore from "@/lib/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, Users, ShoppingCart, TrendingUp, AlertCircle, DollarSign, Search, X, PlusCircle, CheckCircle2 } from "lucide-react";
+import { Package, BarChart2, Users, ShoppingCart, TrendingUp, AlertCircle, DollarSign, Search, X, PlusCircle, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -47,6 +47,7 @@ export default function Dashboard() {
   useEffect(() => {
     setMounted(true);
     initialize();
+    loadSalesStats();
   }, [initialize]);
 
   const totalRevenue = mounted && isInitialized ? getTotalRevenue() : 0;
