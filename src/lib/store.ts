@@ -48,10 +48,10 @@ const useStore = create<AppState>()(
           let productsData: any[] | null = null;
 
           try {
-            const { data, error } = await supabase
-              .from("products")
-              .select("*")
-              .order("name", { ascending: true });
+            const { data, error } = await Promise.race([
+              supabase.from("products").select("*").order("name", { ascending: true }),
+              new Promise<any>((_, reject) => setTimeout(() => reject(new Error("timeout")), 8000))
+            ]);
 
             if (error) {
               console.error("[initialize][products] error", error);
