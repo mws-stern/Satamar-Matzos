@@ -172,8 +172,9 @@ export default function NewOrderPage({
                         }, [selectedCustomerId, customers, allOrders]);
 
                         const addItem = () => {
-                                                if (products.length === 0) return;
-                                                const p0 = products[0];
+                                                const ep = products.length > 0 ? products : storeProducts;
+                                                if (ep.length === 0) return;
+                                                const p0 = ep[0];
                                                 const unit0 = p0.sellByHalfLb ? "half_lb" : "lb";
                                                 const price0 = p0.sellByHalfLb ? (p0.pricePerHalfLb || p0.pricePerLb) : p0.pricePerLb;
                                                 setItems([...items, {
