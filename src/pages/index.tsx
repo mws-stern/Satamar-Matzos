@@ -68,7 +68,7 @@ export default function Dashboard() {
         orderCount: stats[p.id]?.orderCount || 0,
       })).sort((a, b) => b.totalRevenue - a.totalRevenue);
       setSalesStats(result);
-    } catch(e) { console.error("sales stats error", e); }
+    } catch(e: any) { console.error("sales stats error", e); }
   };
 
   useEffect(() => {
