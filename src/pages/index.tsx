@@ -276,7 +276,7 @@ export default function Dashboard() {
         <AlertsPanel />
 
         {/* Products Sold Summary */}
-        {mounted && (
+        {mounted && isInitialized && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
