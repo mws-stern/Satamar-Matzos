@@ -47,7 +47,6 @@ export default function Dashboard() {
   useEffect(() => {
     setMounted(true);
     initialize();
-    loadSalesStats();
   }, [initialize]);
 
   const totalRevenue = mounted && isInitialized ? getTotalRevenue() : 0;
