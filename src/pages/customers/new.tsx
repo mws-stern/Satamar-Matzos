@@ -89,14 +89,7 @@ export default function NewCustomerPage({ existingCustomers: _initial }: { exist
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.email.trim()) {
-      toast({
-        title: "Validation Error",
-        description: "Email address is strictly required.",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Email is optional
 
     if (!formData.firstName.trim() && !formData.lastName.trim()) {
       toast({
@@ -311,7 +304,6 @@ export default function NewCustomerPage({ existingCustomers: _initial }: { exist
                       placeholder="customer@email.com"
                       value={formData.email}
                       onChange={(e) => handleChange("email", e.target.value)}
-                      required
                       className="border-blue-300 focus-visible:ring-blue-500"
                     />
                   </div>
@@ -354,7 +346,7 @@ export default function NewCustomerPage({ existingCustomers: _initial }: { exist
             <Link href="/customers">
               <Button type="button" variant="outline">Cancel</Button>
             </Link>
-            <Button type="submit" disabled={loading || !!duplicateWarning} className="bg-blue-600 hover:bg-blue-700">
+            <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">
               <Save className="w-4 h-4 mr-2" />
               {loading ? "Saving Customer..." : "Save Customer Record"}
             </Button>
