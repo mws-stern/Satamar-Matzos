@@ -43,81 +43,69 @@ export default function OrdersPage({ initialOrders, initialCustomers }: OrdersPa
             for (const order of filtered) {
                 const doc = new jsPDF({ format: "letter", unit: "mm" });
                 const pw = 215.9; const ph = 279.4;
-                // Header brown bar
-                doc.setFillColor(146, 64, 14);
-                doc.rect(0, 0, pw, 38, "F");
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(22); doc.setFont("helvetica", "bold");
-                doc.text("Satmar Montreal Matzos", pw/2, 14, { align: "center" });
-                doc.setFontSize(10); doc.setFont("helvetica", "normal");
-                doc.text("2765 Chemin Bates, Montreal, QC | sales@satmarmatzosmtl.ca | 438-300-8425", pw/2, 23, { align: "center" });
-                doc.setFontSize(13); doc.setFont("helvetica", "bold");
-                doc.text("ORDER PREP SHEET", pw/2, 33, { align: "center" });
-                // Order info
+                doc.setDrawColor(217, 119, 6); doc.setLineWidth(1);
+                doc.line(15, 35, pw-15, 35);
                 doc.setTextColor(0,0,0);
-                let y = 45;
-                doc.setFontSize(14); doc.setFont("helvetica", "bold");
-                doc.text(`#${order.orderNumber || order.id.slice(0,8)} - ${order.customerName || ""}`, 15, y); y+=8;
-                doc.setFontSize(10); doc.setFont("helvetica", "normal");
-                doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`, 15, y);
-                if (order.deliveryDate) doc.text(`Delivery: ${new Date(order.deliveryDate).toLocaleDateString()}`, 90, y);
-                doc.text(`Status: ${order.status.toUpperCase()}`, 160, y); y+=7;
-                // Customer address - fetch from customers array
-                const cust = customers.find((c: any) => c.id === order.customerId) as any;
+                doc.setFontSize(20); doc.setFont("helvetica", "bold");
+                doc.text("ORDER PREP SHEET", 15, 18);
+                doc.setFontSize(13); doc.setFont("helvetica", "bold"); doc.setTextColor(146, 64, 14);
+                doc.text("#" + (order.orderNumber || order.id.slice(0,8)) + " - " + (order.customerName || ""), 15, 27);
+                doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(55,65,81);
+                const cust = customers.find((cx) => cx.id === order.customerId) as any;
+                doc.text("Date: " + new Date(order.createdAt).toLocaleDateString(), pw-15, 18, { align: "right" });
+                if (order.deliveryDate) doc.text("Delivery: " + new Date(order.deliveryDate).toLocaleDateString(), pw-15, 24, { align: "right" });
+                const phone = (cust && (cust.phone || cust.mobile)) || "";
+                if (phone) doc.text("Phone: " + phone, pw-15, 30, { align: "right" });
                 if (cust) {
-                    const addr = [cust.phone || cust.mobile, cust.address || cust.street, cust.city].filter(Boolean).join(" | ");
-                    if (addr) { doc.text(addr, 15, y); y+=7; }
+                    const addr = [cust.address || cust.street, cust.city, cust.state].filter(Boolean).join(", ");
+                    if (addr) { doc.setTextColor(100,100,100); doc.text(addr, 15, 32); }
                 }
-                // Divider
-                doc.setDrawColor(215, 119, 6); doc.setLineWidth(0.8);
-                doc.line(15, y, pw-15, y); y+=6;
-                // Table header
+                let y = 42;
                 doc.setFillColor(254, 243, 199);
                 doc.rect(15, y, pw-30, 9, "F");
-                doc.setDrawColor(215,119,6); doc.rect(15, y, pw-30, 9);
-                doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(0,0,0);
-                doc.text("PRODUCT", 18, y+6);
-                doc.text("QTY", 120, y+6, { align: "center" });
-                doc.text("PRICE/LB", 148, y+6, { align: "center" });
-                doc.text("DISCOUNT", 172, y+6, { align: "center" });
-                doc.text("TOTAL", 198, y+6, { align: "right" });
-                y+=9;
-                // Items
-                doc.setFont("helvetica", "normal");
-                (order.items || []).forEach((item: any, i: number) => {
-                    const rowH = 10;
+                doc.setDrawColor(217,119,6); doc.rect(15, y, pw-30, 9);
+                doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(0,0,0);
+                doc.text("Product", 18, y+6);
+                doc.text("Qty (lbs)", 105, y+6, { align: "center" });
+                doc.text("Price/lb", 138, y+6, { align: "right" });
+                doc.text("Discount", 163, y+6, { align: "right" });
+                doc.text("Total", 193, y+6, { align: "right" });
+                doc.text("Done", pw-17, y+6, { align: "center" });
+                y += 9;
+                doc.setFont("helvetica", "normal"); doc.setFontSize(10);
+                (order.items || []).forEach((item, i) => {
+                    const rowH = 11;
                     if (i%2===0) { doc.setFillColor(255,255,255); } else { doc.setFillColor(255,251,235); }
                     doc.rect(15, y, pw-30, rowH, "F");
                     doc.setDrawColor(229,231,235); doc.rect(15, y, pw-30, rowH);
-                    doc.setTextColor(0,0,0); doc.setFontSize(9);
-                    doc.text(item.productName || "", 18, y+6.5);
-                    const qty = item.unit === "half_lb" ? `${item.quantity} half-lb` : `${item.quantity} lb`;
-                    doc.text(qty, 120, y+6.5, { align: "center" });
-                    doc.text(`$${(item.pricePerLb||0).toFixed(2)}`, 148, y+6.5, { align: "center" });
-                    const disc = item.discount > 0 ? (item.discountType==="percent" ? `${item.discount}%` : `$${item.discount}`) : "-";
-                    doc.text(disc, 172, y+6.5, { align: "center" });
-                    doc.text(`$${(item.finalPrice||item.totalPrice||0).toFixed(2)}`, 198, y+6.5, { align: "right" });
-                    y+=rowH;
+                    doc.setTextColor(0,0,0); doc.setFont("helvetica", "bold");
+                    doc.text((item as any).productName || "", 18, y+7.5);
+                    doc.setFont("helvetica", "normal");
+                    const qty = (item as any).unit === "half_lb" ? ((item as any).quantity + " half-lb") : ((item as any).quantity + " lb");
+                    doc.text(qty, 105, y+7.5, { align: "center" });
+                    doc.text("$" + ((item as any).pricePerLb||0).toFixed(2), 138, y+7.5, { align: "right" });
+                    const disc = ((item as any).discount||0)>0 ? "-$" + ((item as any).discount||0).toFixed(2) : "-";
+                    if (((item as any).discount||0)>0) doc.setTextColor(220,38,38); else doc.setTextColor(107,114,128);
+                    doc.text(disc, 163, y+7.5, { align: "right" });
+                    doc.setTextColor(0,0,0); doc.setFont("helvetica", "bold");
+                    doc.text("$" + ((item as any).finalPrice||(item as any).totalPrice||0).toFixed(2), 193, y+7.5, { align: "right" });
+                    doc.setDrawColor(217,119,6); doc.rect(pw-22, y+2, 7, 7);
+                    y += rowH;
                 });
-                y+=5;
-                // Totals
-                doc.setDrawColor(215,119,6); doc.setLineWidth(0.5); doc.line(140, y, pw-15, y); y+=6;
-                doc.setFont("helvetica", "normal"); doc.setFontSize(10);
-                doc.text("Subtotal:", 145, y); doc.text(`$${(order.subtotal||0).toFixed(2)}`, pw-15, y, { align: "right" }); y+=7;
-                if ((order.discount||0) > 0) { doc.text("Discount:", 145, y); doc.text(`-$${(order.discount||0).toFixed(2)}`, pw-15, y, { align: "right" }); y+=7; }
+                y += 6;
+                doc.setDrawColor(229,231,235); doc.rect(15, y, 100, 30);
+                doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(107,114,128);
+                doc.text("NOTES", 18, y+6);
+                doc.setFont("helvetica", "normal"); doc.setTextColor(0,0,0); doc.setFontSize(9);
+                if (order.notes) doc.text(order.notes, 18, y+14, { maxWidth: 94 });
+                doc.setFillColor(255,251,235); doc.rect(120, y, pw-135, 30, "F");
+                doc.setDrawColor(217,119,6); doc.rect(120, y, pw-135, 30);
+                doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(0,0,0);
+                doc.text("Subtotal:", 125, y+8); doc.text("$" + (order.subtotal||0).toFixed(2), pw-17, y+8, { align: "right" });
                 doc.setFont("helvetica", "bold"); doc.setFontSize(12);
-                doc.text("TOTAL:", 145, y); doc.text(`$${(order.total||0).toFixed(2)}`, pw-15, y, { align: "right" }); y+=8;
-                doc.setTextColor(22,163,74); doc.setFontSize(10);
-                doc.text("Paid:", 145, y); doc.text(`$${(order.amountPaid||0).toFixed(2)}`, pw-15, y, { align: "right" }); y+=7;
-                doc.setTextColor(220,38,38);
-                doc.text("Balance Due:", 145, y); doc.text(`$${(order.amountDue||0).toFixed(2)}`, pw-15, y, { align: "right" });
-                // Notes
-                if (order.notes) { doc.setTextColor(0,0,0); doc.setFontSize(9); doc.text(`Notes: ${order.notes}`, 15, ph-18); }
-                // Footer
-                doc.setFillColor(146,64,14); doc.rect(0, ph-12, pw, 12, "F");
-                doc.setTextColor(255,255,255); doc.setFontSize(8);
-                doc.text("Satmar Montreal Matzos | Thank you for your order!", pw/2, ph-5, { align: "center" });
+                doc.text("TOTAL:", 125, y+20); doc.text("$" + (order.total||0).toFixed(2), pw-17, y+20, { align: "right" });
                 zip.file(`Order-${order.orderNumber || order.id.slice(0,8)}.pdf`, doc.output("blob"));
+                
 
             }
             const blob = await zip.generateAsync({ type: "blob" });
