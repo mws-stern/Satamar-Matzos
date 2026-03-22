@@ -85,7 +85,7 @@ export default function OrdersPage({ initialOrders, initialCustomers }: OrdersPa
                 (order.items || []).forEach((item: any, i: number) => {
                     if (i % 2 === 0) { doc.setFillColor(249,250,251); doc.rect(15, y-1, pw-30, 9, "F"); }
                     doc.text(item.productName || "", 20, y+5);
-                    doc.text(`${item.quantity} ${item.unit}`, 120, y+5);
+                    doc.text(`${item.quantity} ${item.unit || "lb"}`, 120, y+5);
                     doc.text(`$${item.pricePerLb.toFixed(2)}`, 145, y+5);
                     doc.text(`$${(item.finalPrice || item.totalPrice || 0).toFixed(2)}`, 185, y+5);
                     y += 9;
