@@ -13,12 +13,21 @@ import type { GetServerSideProps } from "next";
 
 interface OrdersPageProps {
     initialOrders: Order[];
-    initialCustomers: Array<{ id: string; name: string }>;
+    initialCustomers: Array<{ id: string; name: string; phone?: string; mobile?: string; address?: string; street?: string; city?: string; state?: string }>;
 }
 
 export default function OrdersPage({ initialOrders, initialCustomers }: OrdersPageProps) {
     const [orders, setOrders] = useState<Order[]>(initialOrders);
-    const [customers, setCustomers] = useState(initialCustomers);
+    const [customers, setCustomers] = useState<Array<{ id: string; name: string; phone?: string; mobile?: string; address?: string; street?: string; city?: string; state?: string }>>(initialCustomers);
+
+    useEffect(() => {
+        // Fetch full customer data for PDF address
+        import("@/integrations/supabase/client").then(({ supabase }) => {
+            supabase.from("customers").select("id, name, phone, mobile, address, street, city, state").then(({ data }) => {
+                if (data) setCustomers(data as any);
+            });
+        });
+    }, []);
     const [searchTerm, setSearchTerm] = useState("");
     const [fromDate, setFromDate] = useState("");
     const [toDate, setToDate] = useState("");
