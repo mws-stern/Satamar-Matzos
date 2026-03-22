@@ -73,6 +73,10 @@ export default function OrderDetailPage() {
     const [paymentNotes, setPaymentNotes] = useState("");
     const [savingPayment, setSavingPayment] = useState(false);
     const [payments, setPayments] = useState<any[]>([]);
+    const [packedItems, setPackedItems] = useState<Record<string, boolean>>({});
+    const togglePacked = (itemId: string) => {
+        setPackedItems(prev => ({ ...prev, [itemId]: !prev[itemId] }));
+    };
 
     useEffect(() => {
         if (id && typeof id === "string") {
@@ -410,7 +414,10 @@ export default function OrderDetailPage() {
                         </thead>
                         <tbody>
                             {order.items?.map((item, i) => (
-                                <tr key={i} style={{background: i % 2 === 0 ? "#fff" : "#fffbeb"}}>
+                                <tr key={i} style={{background: packedItems[item.id] ? "#dcfce7" : (i % 2 === 0 ? "#fff" : "#fffbeb")}}>
+                                <td style={{padding: "10px 12px", border: "1px solid #e5e7eb", textAlign: "center", width: "40px"}}>
+                                    <input type="checkbox" checked={!!packedItems[item.id]} onChange={() => togglePacked(item.id)} style={{width:"18px", height:"18px", cursor:"pointer", accentColor:"#16a34a"}} />
+                                </td>
                                     <td style={{padding: "10px 12px", border: "1px solid #e5e7eb", fontWeight: "600", fontSize: "15px"}}>{item.productName}</td>
                                     <td style={{padding: "10px 12px", border: "1px solid #e5e7eb", textAlign: "center", fontSize: "16px", fontWeight: "700"}}>{item.quantity}</td>
                                     <td style={{padding: "10px 12px", border: "1px solid #e5e7eb", textAlign: "right"}}>${(item.pricePerLb || 0).toFixed(2)}</td>

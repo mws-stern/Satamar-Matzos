@@ -41,23 +41,77 @@ export default function OrdersPage({ initialOrders, initialCustomers }: OrdersPa
             const JSZip = JSZipModule.default;
             const zip = new JSZip();
             for (const order of filtered) {
-                const doc = new jsPDF();
-                doc.setFontSize(16);
-                doc.text("Satmar Montreal Matzos", 20, 20);
+                const doc = new jsPDF({ format: "letter", unit: "mm" });
+                const pw = 215.9; const ph = 279.4;
+                // Header
+                doc.setFillColor(146, 64, 14);
+                doc.rect(0, 0, pw, 35, "F");
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(20);
+                doc.setFont("helvetica", "bold");
+                doc.text("Satmar Montreal Matzos", pw/2, 15, { align: "center" });
+                doc.setFontSize(11);
+                doc.setFont("helvetica", "normal");
+                doc.text("2765 Chemin Bates, Montreal, QC | sales@satmarmatzosmtl.ca | 438-300-8425", pw/2, 25, { align: "center" });
+                doc.setFontSize(14);
+                doc.setFont("helvetica", "bold");
+                doc.text("ORDER RECEIPT", pw/2, 32, { align: "center" });
+                // Order info box
+                doc.setTextColor(0, 0, 0);
+                doc.setFillColor(255, 251, 235);
+                doc.rect(15, 42, pw-30, 38, "F");
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "bold");
+                doc.text(`Order #: ${order.orderNumber || order.id.slice(0,8)}`, 20, 52);
+                doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`, 20, 62);
+                doc.text(`Status: ${order.status.toUpperCase()}`, 20, 72);
+                doc.text(`Customer: ${order.customerName || ""}`, pw/2, 52);
+                doc.text(`Payment: ${order.paymentStatus.toUpperCase()}`, pw/2, 62);
+                if (order.deliveryDate) doc.text(`Delivery: ${new Date(order.deliveryDate).toLocaleDateString()}`, pw/2, 72);
+                // Items table header
+                let y = 90;
+                doc.setFillColor(146, 64, 14);
+                doc.rect(15, y, pw-30, 8, "F");
+                doc.setTextColor(255,255,255);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(9);
+                doc.text("ITEM", 20, y+5.5);
+                doc.text("QTY", 120, y+5.5);
+                doc.text("UNIT PRICE", 145, y+5.5);
+                doc.text("TOTAL", 185, y+5.5);
+                y += 10;
+                doc.setTextColor(0,0,0);
+                doc.setFont("helvetica", "normal");
+                (order.items || []).forEach((item: any, i: number) => {
+                    if (i % 2 === 0) { doc.setFillColor(249,250,251); doc.rect(15, y-1, pw-30, 9, "F"); }
+                    doc.text(item.productName || "", 20, y+5);
+                    doc.text(`${item.quantity} ${item.unit}`, 120, y+5);
+                    doc.text(`$${item.pricePerLb.toFixed(2)}`, 145, y+5);
+                    doc.text(`$${(item.finalPrice || item.totalPrice || 0).toFixed(2)}`, 185, y+5);
+                    y += 9;
+                });
+                // Totals
+                y += 5;
+                doc.setDrawColor(146,64,14);
+                doc.line(15, y, pw-15, y);
+                y += 8;
+                doc.setFont("helvetica", "bold");
+                doc.text("Subtotal:", 145, y); doc.text(`$${order.subtotal.toFixed(2)}`, 185, y); y+=8;
+                if (order.discount > 0) { doc.text("Discount:", 145, y); doc.text(`-$${order.discount.toFixed(2)}`, 185, y); y+=8; }
                 doc.setFontSize(12);
-                doc.text(`Order: #${order.orderNumber || order.id.slice(0,8)}`, 20, 35);
-                doc.text(`Customer: ${order.customerName || ""}`, 20, 45);
-                doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`, 20, 55);
-                doc.text(`Status: ${order.status}`, 20, 65);
-                doc.text(`Total: $${order.total.toFixed(2)}`, 20, 75);
-                doc.text(`Paid: $${order.amountPaid.toFixed(2)}`, 20, 85);
-                doc.text(`Due: $${order.amountDue.toFixed(2)}`, 20, 95);
-                if (order.items && order.items.length > 0) {
-                    doc.text("Items:", 20, 110);
-                    order.items.forEach((item: any, i: number) => {
-                        doc.text(`  ${item.productName} - ${item.quantity} ${item.unit} - $${(item.finalPrice || item.totalPrice || 0).toFixed(2)}`, 20, 120 + i * 10);
-                    });
-                }
+                doc.text("TOTAL:", 145, y); doc.text(`$${order.total.toFixed(2)}`, 185, y); y+=10;
+                doc.setTextColor(22,163,74);
+                doc.text("Paid:", 145, y); doc.text(`$${order.amountPaid.toFixed(2)}`, 185, y); y+=8;
+                doc.setTextColor(220,38,38);
+                doc.text("Balance Due:", 145, y); doc.text(`$${order.amountDue.toFixed(2)}`, 185, y);
+                // Notes
+                if (order.notes) { doc.setTextColor(0,0,0); doc.setFontSize(9); doc.text(`Notes: ${order.notes}`, 20, ph-20); }
+                // Footer
+                doc.setFillColor(146,64,14);
+                doc.rect(0, ph-12, pw, 12, "F");
+                doc.setTextColor(255,255,255);
+                doc.setFontSize(8);
+                doc.text("Thank you for your order! | Satmar Montreal Matzos", pw/2, ph-5, { align: "center" });
                 zip.file(`Order-${order.orderNumber || order.id.slice(0,8)}.pdf`, doc.output("blob"));
             }
             const blob = await zip.generateAsync({ type: "blob" });
