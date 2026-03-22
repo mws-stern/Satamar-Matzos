@@ -171,10 +171,16 @@ export default function OrderDetailPage() {
         try {
             await supabaseService.updateOrder(order.id, { status: newStatus });
             setOrder({ ...order, status: newStatus as Order["status"] });
-            toast({
-                title: "Success",
-                description: "Order status updated successfully",
-            });
+            if (newStatus === "confirmed" && customer && customer.email) {
+                try {
+                    await emailService.sendOrderConfirmation({ ...order, status: "confirmed" as any }, customer);
+                    toast({ title: "Order Confirmed", description: "Email sent to customer." });
+                } catch (e) {
+                    toast({ title: "Status Updated", description: "Order confirmed. Email failed." });
+                }
+            } else {
+                toast({ title: "Success", description: "Order status updated successfully." });
+            }
         } catch (error) {
             console.error("Error updating status:", error);
             toast({

@@ -20,6 +20,56 @@ export default function OrdersPage({ initialOrders, initialCustomers }: OrdersPa
     const [orders, setOrders] = useState<Order[]>(initialOrders);
     const [customers, setCustomers] = useState(initialCustomers);
     const [searchTerm, setSearchTerm] = useState("");
+    const [fromDate, setFromDate] = useState("");
+    const [toDate, setToDate] = useState("");
+    const [downloading, setDownloading] = useState(false);
+
+    const downloadOrdersPDF = async () => {
+        setDownloading(true);
+        try {
+            const filtered = orders.filter(o => {
+                if (!fromDate && !toDate) return true;
+                const d = new Date(o.createdAt);
+                if (fromDate && d < new Date(fromDate)) return false;
+                if (toDate && d > new Date(toDate + "T23:59:59")) return false;
+                return true;
+            });
+            if (filtered.length === 0) { alert("No orders in selected date range"); setDownloading(false); return; }
+            const jsPDFModule = await import("jspdf");
+            const jsPDF = jsPDFModule.default || (jsPDFModule as any).jsPDF;
+            const JSZipModule = await import("jszip");
+            const JSZip = JSZipModule.default;
+            const zip = new JSZip();
+            for (const order of filtered) {
+                const doc = new jsPDF();
+                doc.setFontSize(16);
+                doc.text("Satmar Montreal Matzos", 20, 20);
+                doc.setFontSize(12);
+                doc.text(`Order: #${order.orderNumber || order.id.slice(0,8)}`, 20, 35);
+                doc.text(`Customer: ${order.customerName || ""}`, 20, 45);
+                doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`, 20, 55);
+                doc.text(`Status: ${order.status}`, 20, 65);
+                doc.text(`Total: $${order.total.toFixed(2)}`, 20, 75);
+                doc.text(`Paid: $${order.amountPaid.toFixed(2)}`, 20, 85);
+                doc.text(`Due: $${order.amountDue.toFixed(2)}`, 20, 95);
+                if (order.items && order.items.length > 0) {
+                    doc.text("Items:", 20, 110);
+                    order.items.forEach((item: any, i: number) => {
+                        doc.text(`  ${item.productName} - ${item.quantity} ${item.unit} - $${(item.finalPrice || item.totalPrice || 0).toFixed(2)}`, 20, 120 + i * 10);
+                    });
+                }
+                zip.file(`Order-${order.orderNumber || order.id.slice(0,8)}.pdf`, doc.output("blob"));
+            }
+            const blob = await zip.generateAsync({ type: "blob" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `Orders-${fromDate || "all"}-to-${toDate || "all"}.zip`;
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch(e) { console.error("PDF ZIP error:", e); alert("Download failed: " + e); }
+        setDownloading(false);
+    };
 
     // Client-side load
     useEffect(() => {
@@ -143,12 +193,17 @@ export default function OrdersPage({ initialOrders, initialCustomers }: OrdersPa
                         <h1 className="text-3xl font-bold">Orders</h1>
                         <p className="text-muted-foreground">Manage and track all orders</p>
                     </div>
-                    <Link href="/orders/new">
-                        <Button>
-                            <Plus className="w-4 h-4 mr-2" />
-                            New Order
+                    <div className="flex gap-2 items-center flex-wrap">
+                        <input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="border rounded px-2 py-1 text-sm" />
+                        <span className="text-sm">to</span>
+                        <input type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="border rounded px-2 py-1 text-sm" />
+                        <Button variant="outline" onClick={downloadOrdersPDF} disabled={downloading}>
+                            {downloading ? "Downloading..." : "Download ZIP"}
                         </Button>
-                    </Link>
+                        <Link href="/orders/new">
+                            <Button><Plus className="w-4 h-4 mr-2" />New Order</Button>
+                        </Link>
+                    </div>
                 </div>
 
                 <Card>
