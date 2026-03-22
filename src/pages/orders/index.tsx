@@ -63,7 +63,7 @@ export default function OrdersPage({ initialOrders, initialCustomers }: OrdersPa
                 if (order.deliveryDate) doc.text(`Delivery: ${new Date(order.deliveryDate).toLocaleDateString()}`, 90, y);
                 doc.text(`Status: ${order.status.toUpperCase()}`, 160, y); y+=7;
                 // Customer address - fetch from customers array
-                const cust = customers.find((c: any) => c.id === order.customerId);
+                const cust = customers.find((c: any) => c.id === order.customerId) as any;
                 if (cust) {
                     const addr = [cust.phone || cust.mobile, cust.address || cust.street, cust.city].filter(Boolean).join(" | ");
                     if (addr) { doc.text(addr, 15, y); y+=7; }
